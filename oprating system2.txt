@@ -1,0 +1,607 @@
+oprating system
+vi fifo
+
+
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
+void main()
+{
+    int res;
+    res = mkfifo("fifo1", 0777);
+    printf("named pipe created\n");
+}
+
+
+vi sender
+
+
+
+
+#include <unistd.h>
+#include <stdio.h>
+#include <fcntl.h>
+
+int main()
+{
+    int res, n;
+
+    res = open("fifo1", O_WRONLY);
+    write(res, "message", 7);
+
+    printf("\nSender process having PID %d sent the data\n", getpid());
+
+    return 0;
+}
+
+
+
+vi receiver.c
+
+
+
+
+#include<unistd.h>
+#include<stdio.h>
+#include<fcntl.h>
+
+int main()
+{
+    int res, n;
+    char buffer[100];
+    res=open("fifo1", O_RDONLY);
+    n=read(res, buffer, 100);
+    printf("reader process having PID %d started \n", getpid());
+    printf("data received by the receiver %d is : %s\n", getpid(), buffer);
+}
+
+
+run:
+cc sender.c -o sender
+cc receiver.c -o receiver
+./receiver.c & ./sender
+
+
+vi read.c
+
+
+
+#include<unistd.h>
+int main()
+{
+    char b[50];
+    read(0, b, 10);
+    write(1, b, 10);
+}
+
+
+vi write.c
+
+
+#include<unistd.h>
+int main()
+{
+write(1,"hello world",11);
+}
+
+vi seek.c
+#include<sys/types.h>
+#include<sys/stat.h>
+#include<fcntl.h>
+#include<unistd.h>
+int main()
+{
+     int n,f,f1;
+     char buff[10];
+     f=open("seeking",O_RDWR);
+     read(f,
+
+                     buff,10);
+     write(1,buff,10);
+     lseek(f1,10,SEEK_CUR);
+     read(f1,buff,10);
+     write(1,buff,10);
+}
+
+
+vi seek2.c
+#include<sys/types.h>
+#include<sys/stat.h>
+#include<fcntl.h>
+#include<unistd.h>
+#include<stdio.h>
+int main()
+{
+        int n,f,f1;
+                char buff[10];
+                f=open("seeking",O_RDWR);
+                f1=lseek(f1,5,SEEK_SET);
+                printf("pointer is at %d,position \n",f1);
+                read(f1,buff,10);
+                write(1,buff,10);
+}
+
+
+vi arch.c
+
+
+#include<unistd.h>
+#include<stdio.h>
+
+int main()
+{
+    int n;
+    n = write(1, "hello", 5);
+    printf("\nvalue of n is %d\n", n);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+vi fork.c
+#include<unistd.h>
+#include<sys/types.h>
+#include<stdio.h>
+#include<sys/wait.h>
+
+int main()
+{
+    pid_t q;
+    printf("before initiating fork system call \n");
+    q=fork();
+    if(q==0)
+    {
+        sleep(3);
+        printf("i am child having my process id is: %d\n",getpid());
+        printf("my parent process id is: %d\n ",getpid());
+    }
+    else
+    {
+        //wait(null)
+        printf("my child's process id is: %d\n",getpid());
+        printf("i am parent having parent process id is: %d\n",getpid());
+    }
+    printf("common\n");
+}
+
+
+
+
+note:after pasting the program give there // on //wait(null) 
+
+
+
+
+
+
+
+vi string.sh
+while :
+do
+echo "*******************************"
+echo "menu"
+echo "1. to find the length of string"
+echo "2. concatenate strings"
+echo "3. compare two strings"
+echo "4. exit"
+echo "enter your choice"
+read ch
+
+case $ch in
+
+1)
+echo "enter first string"
+read s1
+len=`expr length "$s1"`
+echo "length of $s1 is $len"
+;;
+
+2)
+echo "enter first string"
+read s1
+echo "enter second string"
+read s2
+echo "the concatenated string is $s1$s2"
+;;
+
+3)
+echo "enter first string"
+read s1
+echo "enter second string"
+read s2
+
+if [ "$s1" = "$s2" ]
+then
+echo "strings are equal"
+else
+echo "strings are not equal"
+fi
+;;
+
+4)
+echo "exit..."
+exit
+;;
+
+*)
+echo "invalid choice"
+;;
+
+esac
+done
+
+note:
+to run 
+esc shift:x
+chmod u+x string.sh
+./string.sh
+
+
+
+vi script.sh
+
+
+echo "Enter three numbers:"
+read a b c
+
+if (( a >= b && a >= c ))
+then
+    big=$a
+
+elif (( b >= a && b >= c ))
+then
+    big=$b
+
+else
+    big=$c
+fi
+
+echo "Biggest among $a $b $c is $big"
+
+
+
+
+vi dcsc.sh
+echo "Enter the string"
+read str
+#str="aa222 b22b c1c d22d e333e f444ffff"
+
+let i=0
+let digit=0
+let character=0
+let other=0
+let length=${#str}
+
+while [ $i -lt $length ]
+do
+    x="${str:$i:1}"
+    if [[ $x =~ [0-9] ]]
+    then
+        let digit++
+    elif [[ $x =~ [a-zA-Z] ]]
+    then
+        let character++
+    else
+        let other++
+    fi
+    let i++
+done
+
+echo "Number of digit $digit"
+echo "Number of character $character"
+echo "Number of special character $other"
+echo "Total length of string $length"
+
+
+note:remove all # 
+
+
+vi pson.sh
+
+
+echo "Enter Main separated by space"
+read str
+echo "Enter search string"
+read key
+
+for word in $str
+do
+    if [ "$word" == "$key" ]
+    then
+        echo "Element Present"
+        exit
+    fi
+done
+
+echo "Element Not Present"
+
+
+
+vi nmf.sh
+
+# Display Number in Matrix format
+# -e in echo is for Enabling Back slash
+# -n in echo is for ignoring newline
+
+read -p "Enter Rows and Columns: " r c
+
+for ((i=1; i<=r; i++))
+do
+    for ((j=1; j<=c; j++))
+    do
+        echo -n "$i "
+    done
+    echo
+done
+
+
+note:remove all # in ubuntu
+out 1 3 any num
+
+vi twt.sh
+
+let count=0
+echo "Please type 'finish' to quit this demo."
+
+# Prompt the user with "Say something > " and
+# read the value into variable "x"
+while read -p "Say something > " x
+do
+    if [ "${x}" == "finish" ]
+    then
+        break
+    fi
+
+    if [ "${x}" == "abort" ]
+    then
+        exit
+    fi
+
+    # increment the counter
+    let count++
+
+    # if we say "silent", then we count the word
+    # but do not display it:
+    if [ "${x}" == "silent" ]
+    then
+        continue
+    fi
+
+    echo "you said : '${x}'"
+    echo "you have said ${count} things."
+done
+
+echo "All done. you have said ${count} things to me."
+
+
+
+
+6 whether string contain unique words or not
+
+vi won.sh
+
+
+echo "Enter the string"
+read str
+i=0
+
+# Loop through each character of the string
+while [ $i -lt ${#str} ]
+do
+    # Set j to the next character's index
+    j=$((i+1))
+    
+    # Compare current character at index i with characters at index j
+    while [ $j -lt ${#str} ]
+    do
+        # String slicing ${str:offset:length}
+        if [ "${str:$i:1}" = "${str:$j:1}" ]
+        then
+            echo "words in a string are NOT unique"
+            exit
+        fi
+        let j++
+    done
+    let i++
+done
+
+echo "Words in a string are unique"
+
+
+note:
+sss is not unique
+run again
+dhj is unique
+
+
+write a shell script to performe file operation
+
+
+vi script5.sh
+while :
+do
+    echo " Menu "
+    echo "1. Copy a file"
+    echo "2. Rename a file"
+    echo "3. remove a file"
+    echo "4. exit"
+    echo "enter your choice : "
+    read ch
+
+    case $ch in
+        1)
+            echo "Enter file name to copy : "
+            read f1
+            echo "Enter new file name (copy name) : "
+            read f2
+            if [ -f $f1 ]
+            then
+                cp $f1 $f2
+                echo "$f1 is copied to $f2"
+            else
+                echo "$f1 does not exist"
+            fi
+            ;;
+
+        2)
+            echo "Enter filename to rename: "
+            read f1
+            echo "Enter new file name: "
+            read f2
+            if [ -f $f1 ]
+            then
+                mv $f1 $f2
+                echo "$f1 is renamed to $f2"
+            else
+                echo "$f1 does not exist"
+            fi
+            ;;
+
+        3)
+            echo "Enter file name to remove : "
+            read f1
+            if [ -f $f1 ]
+            then
+                rm -i $f1
+                echo "$f1 is removed"
+            else
+                echo "$f1 does not exist"
+            fi
+            ;;
+
+        4)
+            echo "Exit.."
+            exit
+            ;;
+
+        *)
+            echo "Invalid choice"
+            ;;
+    esac
+done
+
+
+out:
+1
+string.sh
+usm
+2
+us
+3
+us
+4
+
+
+
+
+read the content of a file and display the same on screen(demo cat command)
+
+vi Dcc.sh
+
+read -p "enter file name : " filename
+while read line
+do
+    echo $line
+done < $filename
+
+note:
+out put
+give same file name to run
+Dcc.sh
+
+copy the content of a one file to another file (demo cp command)
+
+vi dcpc.sh
+
+echo "enter file name : "
+read filename
+while read line
+do
+    echo $line >> output
+done < $filename
+echo " ===== content of $filename ====="
+cat output
+
+note:
+out put
+give same file name to run
+
+
+
+vi lwc.sh
+echo "enter the filename"
+read file
+
+c=`cat $file | wc -c`
+w=`cat $file | wc -w`
+l=`grep -c "" $file`
+
+echo "number of characters in $file is $c"
+echo "number of words in $file is $w"
+echo "number of lines in $file is $l"
+
+
+out put
+give same file name to run
+
+
+
+
+5)
+check the permission of a given file and display the status
+
+vi fdts.sh
+
+echo -e "Enter the name of the file : \c"
+read filename
+
+echo File Permission
+
+if [ -r $filename ]
+then
+    echo "$filename is readable"
+else
+    echo "$filename is not readable"
+fi
+
+if [ -w $filename ]
+then
+    echo "$filename is writable"
+else
+    echo "$filename is not writable"
+fi
+
+if [ -x $filename ]
+then
+    echo "$filename is executable"
+else
+    echo "$filename is not executable"
+fi
+
+if [ -s $filename ]
+then
+    echo "$filename has size > 0"
+else
+    echo "$filename has size = 0"
+fi
+
+note:
+give same file name to run
+
+
+ 
+
+
+
+

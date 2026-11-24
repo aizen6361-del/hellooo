@@ -1,0 +1,24 @@
+[{
+  "_id": {
+    "$oid": "6a967659ddf94b79a242d1bd"
+  },
+  "name": "Sam",
+  "age": 21,
+  "course": "Computer sci"
+},
+{
+  "_id": {
+    "$oid": "6a967676ddf94b79a242d1be"
+  },
+  "name": "Ram",
+  "age": 20,
+  "course": "Computer sci"
+},
+{
+  "_id": {
+    "$oid": "6a96768cddf94b79a242d1bf"
+  },
+  "name": "Tom",
+  "age": 19,
+  "course": "Computer sci"
+}]
